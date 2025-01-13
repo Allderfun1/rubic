@@ -11,6 +11,7 @@
   <button type="button" id="T2">T</button>
   <button type="button" id="D1">D'</button>
   <button type="button" id="D2">D</button>
+  <button type="button" id="SS">Start script</button>
 </template>
 
 <script setup>
@@ -19,7 +20,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { onMounted, ref, watch, useTemplateRef } from 'vue';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-let scene = null, camera = null, renderer = null, model = null, rotatorGroup = new THREE.Group(), controls;
+let scene = null, camera = null, renderer = null, model = null, rotatorGroup = new THREE.Group(), controls, moveScript;
+
+moveScript = ["R", "T", "R'", "T'", "R", "T", "R'", "T'", "R", "T", "R'", "T'", "R", "T", "R'", "T'", "R", "T", "R'", "T'", "R", "T", "R'", "T'"];
+
 let cubeSizes = [
   [
     ['YBO', 'BY', 'RBY'],
@@ -36,6 +40,251 @@ let cubeSizes = [
     ['OG', 'G', 'RG'],
     ['OWG', 'WG', 'WRG'],
   ],
+];
+let cubeColors = [
+  {
+    'name': 'YBO',
+    'top': 'B',
+    'down': '',
+    'left': 'O',
+    'right': '',
+    'front': '',
+    'back': 'Y',
+  },
+  {
+    'name': 'BY',
+    'top': 'B',
+    'down': '',
+    'left': '',
+    'right': '',
+    'front': '',
+    'back': 'Y',
+  },
+  {
+    'name': 'RBY',
+    'top': 'B',
+    'down': '',
+    'left': '',
+    'right': 'R',
+    'front': '',
+    'back': 'Y',
+  },
+  {
+    'name': 'BO',
+    'top': 'B',
+    'down': '',
+    'left': 'O',
+    'right': '',
+    'front': '',
+    'back': '',
+  },
+  {
+    'name': 'B',
+    'top': 'B',
+    'down': '',
+    'left': '',
+    'right': '',
+    'front': '',
+    'back': '',
+  },
+  {
+    'name': 'BR',
+    'top': 'B',
+    'down': '',
+    'left': '',
+    'right': 'R',
+    'front': '',
+    'back': '',
+  },
+  {
+    'name': 'OBW',
+    'top': 'B',
+    'down': '',
+    'left': 'O',
+    'right': '',
+    'front': 'W',
+    'back': '',
+  },
+  {
+    'name': 'BW1',
+    'top': 'B',
+    'down': '',
+    'left': '',
+    'right': '',
+    'front': 'W',
+    'back': '',
+  },
+  {
+    'name': 'WBR',
+    'top': 'B',
+    'down': '',
+    'left': '',
+    'right': 'R',
+    'front': 'W',
+    'back': '',
+  },
+  {
+    'name': 'YO',
+    'top': '',
+    'down': '',
+    'left': 'O',
+    'right': '',
+    'front': '',
+    'back': 'Y',
+  },
+  {
+    'name': 'Y',
+    'top': '',
+    'down': '',
+    'left': '',
+    'right': '',
+    'front': '',
+    'back': 'Y',
+  },
+  {
+    'name': 'RY1',
+    'top': '',
+    'down': '',
+    'left': '',
+    'right': 'R',
+    'front': '',
+    'back': 'Y',
+  },
+  {
+    'name': 'O',
+    'top': '',
+    'down': '',
+    'left': 'O',
+    'right': '',
+    'front': '',
+    'back': '',
+  },
+  {
+    'name': '',
+    'top': '',
+    'down': '',
+    'left': '',
+    'right': '',
+    'front': '',
+    'back': '',
+  },
+  {
+    'name': 'R',
+    'top': '',
+    'down': '',
+    'left': '',
+    'right': 'R',
+    'front': '',
+    'back': '',
+  },
+  {
+    'name': 'OW',
+    'top': '',
+    'down': '',
+    'left': 'O',
+    'right': '',
+    'front': 'W',
+    'back': '',
+  },
+  {
+    'name': 'W',
+    'top': '',
+    'down': '',
+    'left': '',
+    'right': '',
+    'front': 'W',
+    'back': '',
+  },
+  {
+    'name': 'WR',
+    'top': '',
+    'down': '',
+    'left': '',
+    'right': 'R',
+    'front': 'W',
+    'back': '',
+  },
+  {
+    'name': 'YOG',
+    'top': '',
+    'down': 'G',
+    'left': 'O',
+    'right': '',
+    'front': '',
+    'back': 'Y',
+  },
+  {
+    'name': 'YG',
+    'top': '',
+    'down': 'G',
+    'left': '',
+    'right': '',
+    'front': '',
+    'back': 'Y',
+  },
+  {
+    'name': 'RYG',
+    'top': '',
+    'down': 'G',
+    'left': '',
+    'right': 'R',
+    'front': '',
+    'back': 'Y',
+  },
+  {
+    'name': 'OG',
+    'top': '',
+    'down': 'G',
+    'left': 'O',
+    'right': '',
+    'front': '',
+    'back': '',
+  },
+  {
+    'name': 'G',
+    'top': '',
+    'down': 'G',
+    'left': '',
+    'right': '',
+    'front': '',
+    'back': '',
+  },
+  {
+    'name': 'RG',
+    'top': '',
+    'down': 'G',
+    'left': '',
+    'right': 'R',
+    'front': '',
+    'back': '',
+  },
+  {
+    'name': 'OWG',
+    'top': '',
+    'down': 'G',
+    'left': 'O',
+    'right': '',
+    'front': 'W',
+    'back': '',
+  },
+  {
+    'name': 'WG',
+    'top': '',
+    'down': 'G',
+    'left': '',
+    'right': '',
+    'front': 'W',
+    'back': '',
+  },
+  {
+    'name': 'WRG',
+    'top': '',
+    'down': 'G',
+    'left': '',
+    'right': 'R',
+    'front': 'W',
+    'back': '',
+  },
 ];
 const occupied = ref(false);
 
@@ -227,6 +476,38 @@ const rotateSize = (way, size) => {
   }
 }
 
+const rotateSizeArgsConverter = moveName => {
+  rotateSize((moveName.length == 2) ? 'left' : 'right', moveName[0]);
+}
+
+const moveScriptExecutor = (moveScript, center = 'F') => {
+  let replacements;
+  switch (center) {
+    case 'F':
+      replacements = { "F": "F", "R": "R", "B": "B", "L": "L", "F'": "F'", "R'": "R'", "B'": "B'", "L'": "L'" };
+      break;
+    case 'R':
+      replacements = { "F": "R", "R": "B", "B": "L", "L": "F", "F'": "R'", "R'": "B'", "B'": "L'", "L'": "F'" };
+      break;
+    case 'B':
+      replacements = { "F": "B", "R": "L", "B": "F", "L": "R", "F'": "B'", "R'": "L'", "B'": "F'", "L'": "R'" };
+      break;
+    case 'L':
+      replacements = { "F": "L", "R": "F", "B": "R", "L": "B", "F'": "L'", "R'": "F'", "B'": "R'", "L'": "B'" };
+      break;
+  }
+  console.log(moveScript);
+  moveScript = moveScript.map(item => replacements[item] || item);
+  console.log(moveScript);
+  let timeout = 0;
+  for (let move of moveScript) {
+    setTimeout(() => {
+      rotateSizeArgsConverter(move);
+    }, timeout);
+    timeout += 600;
+  }
+}
+
 const clearRotatorGroup = size => {
   getSizeModelsArr(getSizeArr(size)).forEach((mesh) => {
     let position = new THREE.Vector3();
@@ -301,6 +582,9 @@ onMounted(() => {
   }
   D2.onclick = () => {
     rotateSize('right', 'D');
+  }
+  SS.onclick = () => {
+    moveScriptExecutor(moveScript);
   }
 });
 
